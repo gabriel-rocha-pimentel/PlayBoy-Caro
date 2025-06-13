@@ -123,7 +123,7 @@ const Home = () => {
             </p>
           </motion.div>
 
-          <div className="max-w-4xl mx-auto">
+          <div className="w-full mx-auto">
             <YouTubePlayer artistName={artistInfo.artist_name} channelUrl={artistInfo.youtube_channel_url} />
           </div>
         </div>

@@ -76,7 +76,7 @@ const YouTubePlayer = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="glass-effect rounded-xl p-6 max-w-lg mx-auto"
+      className="glass-effect rounded-xl p-6 w-full mx-auto"
     >
       <div className="text-center mb-4">
         <h3 className="text-lg font-semibold text-white">
