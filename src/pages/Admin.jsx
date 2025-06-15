@@ -30,10 +30,9 @@ const Admin = () => {
   const [homeInfo, setHomeInfo] = useState({
     id: null,
     artist_name: "PlayBoy Caro",
-    banner_image_url: "",
-    youtube_channel_url: "https://www.youtube.com/@MurilloLimadossantos-b4h",
-    instagram_url: "https://www.instagram.com/@playboy_caro/",
-    twitter_url: "https://twitter.com/playboycaro_oficial",
+    banner_image_url: "https://images.unsplash.com/photo-1700940948230-465ebc062a06",
+    youtube_channel_url: "https://www.youtube.com/@playboy__caro",
+    instagram_url: "https://www.instagram.com/@playboy__caro/",
   });
 
   const [galleryItems, setGalleryItems] = useState([]);
