@@ -1,5 +1,6 @@
+// src/hooks/useAboutStats.js
 import { useState, useEffect, useMemo } from 'react';
-import useYouTubeStats from './useYoutTubeStats';
+import useYouTubeStats from './useYouTubeStats';
 import { supabase } from '@/lib/supabase';
 import {
   Music2,
@@ -36,23 +37,17 @@ export default function useAboutStats() {
     {
       icon: Music2,
       label: 'Singles Lançados',
-      value: stats.videoCount
+      value: stats.videoCount || 0
     },
     {
       icon: Users,
       label: 'Fãs nas Redes',
-      value:
-        stats.subscriberCount > 0
-          ? `${(stats.subscriberCount / 1000).toFixed(1)}K`
-          : '—'
+      value: stats.subscriberCount || 0
     },
     {
       icon: TrendingUp,
       label: 'Visualizações YouTube',
-      value:
-        stats.viewCount > 0
-          ? `${(stats.viewCount / 1_000_000).toFixed(1)}M`
-          : '—'
+      value: stats.viewCount || 0
     },
     {
       icon: Disc3,
