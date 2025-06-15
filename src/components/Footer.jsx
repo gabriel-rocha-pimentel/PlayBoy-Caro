@@ -19,9 +19,8 @@ const Footer = () => {
   };
 
   const socialLinks = {
-    instagram: 'https://www.instagram.com/playboycaro_oficial/', // Exemplo
-    twitter: 'https://twitter.com/playboycaro', // Exemplo
-    youtube: 'https://www.youtube.com/channel/UCexampleChannelID', // Exemplo
+    instagram: 'https://www.instagram.com/playboycaro__oficial/', // Exemplo
+    youtube: 'https://www.youtube.com/channel/@playboy__caro', // Exemplo
   };
 
   return (
@@ -38,7 +37,10 @@ const Footer = () => {
               </span>
             </div>
             <p className="text-gray-400 text-sm">
-              O brabo do trap nacional. Acompanhe Murillo Lima em sua jornada.
+              PlayBoy Caro é o reflexo puro do luxo e do excesso. 
+              Sua arte transborda dinheiro, mulheres, bebida e poder. 
+              No topo do jogo, ele vive entre motores turbinados, drinks exclusivos e noites embaladas por batidas pesadas. 
+              Sua presença é marcante: onde chega, o brilho aumenta, os olhares viram. Não é apenas um artista, é um estilo de vida.
             </p>
           </div>
 
@@ -70,23 +72,20 @@ const Footer = () => {
               <Button variant="ghost" size="icon" onClick={() => handleSocialClick(socialLinks.instagram)} className="p-2 bg-red-900/20 rounded-lg hover:bg-red-900/40 transition-colors group">
                 <Instagram className="h-5 w-5 text-gray-400 group-hover:text-white" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => handleSocialClick(socialLinks.twitter)} className="p-2 bg-red-900/20 rounded-lg hover:bg-red-900/40 transition-colors group">
-                <Twitter className="h-5 w-5 text-gray-400 group-hover:text-white" />
-              </Button>
               <Button variant="ghost" size="icon" onClick={() => handleSocialClick(socialLinks.youtube)} className="p-2 bg-red-900/20 rounded-lg hover:bg-red-900/40 transition-colors group">
                 <Youtube className="h-5 w-5 text-gray-400 group-hover:text-white" />
               </Button>
             </div>
             <div className="flex items-center space-x-2 text-gray-400 mt-4">
               <Mail className="h-4 w-4" />
-              <span className="text-sm">contato@playboycaro.com</span>
+              <span className="text-sm">murillolimadossantos127@gmail.com</span>
             </div>
           </div>
         </div>
 
         <div className="border-t border-red-900/30 mt-8 pt-8 text-center">
           <p className="text-gray-400 text-sm">
-            © {new Date().getFullYear()} PlayBoy Caro. Todos os direitos reservados.
+            © {new Date().getFullYear()} PlayBoy Caro. Todos os direitos reservados. Criado com ❤️ por <br></br> <a href='https://techconnect.app.br' target='_blank'>Tech&Connect</a>.
           </p>
         </div>
       </div>
