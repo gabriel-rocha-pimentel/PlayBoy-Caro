@@ -8,7 +8,7 @@ import {
   TrendingUp,
   Music2
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase'; // ajuste o path conforme sua estrutura
+import { supabase } from '@/lib/supabase';
 
 const About = () => {
   const artistName = "PlayBoy Caro";
@@ -27,12 +27,16 @@ const About = () => {
     youtube_channel_url: ''
   });
 
-  // busca estatísticas do YouTube via API
+  // busca estatísticas do YouTube via API (Vite: use import.meta.env)
   useEffect(() => {
     const fetchYouTubeStats = async () => {
       try {
-        const apiKey = process.env.REACT_APP_YOUTUBE_API_KEY;
-        const channelId = process.env.REACT_APP_YOUTUBE_CHANNEL_ID;
+        const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
+        const channelId = import.meta.env.VITE_YOUTUBE_CHANNEL_ID;
+        if (!apiKey || !channelId) {
+          console.error('Variáveis de ambiente VITE_YOUTUBE_API_KEY ou VITE_YOUTUBE_CHANNEL_ID não definidas');
+          return;
+        }
         const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channelId}&key=${apiKey}`;
 
         const res = await fetch(url);
@@ -87,12 +91,16 @@ const About = () => {
     {
       icon: Users,
       label: 'Fãs nas Redes',
-      value: `${(stats.subscriberCount / 1000).toFixed(1)}K`
+      value: stats.subscriberCount >= 0
+        ? `${(stats.subscriberCount / 1000).toFixed(1)}K`
+        : '—'
     },
     {
       icon: TrendingUp,
       label: 'Visualizações YouTube',
-      value: `${(stats.viewCount / 1000000).toFixed(1)}M`
+      value: stats.viewCount >= 0
+        ? `${(stats.viewCount / 1000000).toFixed(1)}M`
+        : '—'
     },
     {
       icon: Disc3,
@@ -151,7 +159,7 @@ const About = () => {
               PlayBoy Caro <span className="gold-gradient">Sossa</span>
             </h2>
             <p className="text-gray-300 text-lg leading-relaxed">
-              Desde o início da sua trajetória no cenário do trap, {realName} vem construindo sua identidade com autenticidade e ousadia. 
+              Desde o início da sua trajetória no cenário do trap, {realName} vem construindo sua identidade com autenticidade e ousadia como {artistName}. 
               Iniciando sua carreira recentemente, o artista encontrou nos beats disponíveis
               no SoundCloud a base para expressar sua visão de mundo e seu estilo de vida acelerado.
             </p>
@@ -195,6 +203,44 @@ const About = () => {
                 </div>
                 <div className="text-3xl font-bold text-yellow-400 mb-2">{m.value}</div>
                 <div className="text-gray-300 text-sm">{m.label}</div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+                <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-20"
+        >
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              <span className="text-white">Filosofia</span> <span className="gold-gradient">do Artista</span>
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Os pilares que sustentam a arte de {artistName}.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {values.map((value, index) => (
+              <motion.div
+                key={value.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.15 }}
+                className="glass-effect rounded-xl p-8 text-center hover-glow_yellow transition-all duration-300"
+              >
+                <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+                  <value.icon className="h-8 w-8 text-black" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-4">
+                  {value.title.replace('{artistName}', artistName)}
+                </h3>
+                <p className="text-gray-300 leading-relaxed">
+                  {value.description.replace('{artistName}', artistName)}
+                </p>
               </motion.div>
             ))}
           </div>
