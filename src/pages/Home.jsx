@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Instagram, Twitter, Youtube, Music, Play, MicOff as MicVocal } from 'lucide-react';
+import { Instagram, Youtube, Music, Play, MicOff as MicVocal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import YouTubePlayer from '@/components/YouTubePlayer';
 import { useToast } from '@/components/ui/use-toast';
@@ -12,8 +12,8 @@ const Home = () => {
   const [artistInfo, setArtistInfo] = useState({
     artist_name: "PlayBoy Caro",
     banner_image_url: "https://images.unsplash.com/photo-1700940948230-465ebc062a06",
-    youtube_channel_url: "https://www.youtube.com/@MurilloLimadossantos-b4h",
-    instagram_url: "https://www.instagram.com/playboy_caro/",
+    youtube_channel_url: "https://www.youtube.com/@playboy__caro",
+    instagram_url: "https://www.instagram.com/playboy__caro/",
   });
 
   useEffect(() => {
