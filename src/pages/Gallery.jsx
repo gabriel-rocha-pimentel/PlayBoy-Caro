@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import GalleryCard from '@/components/GalleryCard';
 import { Link } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
 
 const Gallery = () => {
@@ -48,25 +47,11 @@ const Gallery = () => {
     const fetchGalleryItems = async () => {
       setLoading(true);
       try {
-        const { data: dbData, error } = await supabase
-          .from('gallery')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          toast({
-            title: 'Erro ao buscar dados do banco de dados',
-            description: error.message,
-            variant: 'destructive',
-          });
-        }
-
         const ytData = await fetchYouTubeVideos();
-        const combined = [...(dbData || []), ...ytData].sort(
-          (a, b) => new Date(b.created_at) - new Date(a.created_at)
-        );
 
-        setGalleryItems(combined);
+        setGalleryItems(
+          ytData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        );
       } catch (err) {
         toast({
           title: 'Erro ao buscar vídeos do YouTube',
