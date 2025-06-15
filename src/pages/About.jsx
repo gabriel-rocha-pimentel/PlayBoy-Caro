@@ -14,20 +14,17 @@ const About = () => {
   const artistName = "PlayBoy Caro";
   const realName = "Murillo Lima";
 
-  // estados para estatísticas do YouTube
   const [stats, setStats] = useState({
     videoCount: 0,
     subscriberCount: 0,
     viewCount: 0,
   });
 
-  // estados para links sociais vinda do Supabase
   const [socialLinks, setSocialLinks] = useState({
     instagram_url: '',
     youtube_channel_url: ''
   });
 
-  // busca estatísticas do YouTube via API (Vite: use import.meta.env)
   useEffect(() => {
     const fetchYouTubeStats = async () => {
       try {
@@ -37,20 +34,45 @@ const About = () => {
           console.error('Variáveis de ambiente VITE_YOUTUBE_API_KEY ou VITE_YOUTUBE_CHANNEL_ID não definidas');
           return;
         }
-        const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channelId}&key=${apiKey}`;
 
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        // 1. Buscar estatísticas do canal
+        const channelStatsRes = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channelId}&key=${apiKey}`);
+        const channelStatsData = await channelStatsRes.json();
 
-        const statistics = data.items?.[0]?.statistics;
-        if (statistics) {
-          setStats({
-            videoCount: Number(statistics.videoCount),
-            subscriberCount: Number(statistics.subscriberCount),
-            viewCount: Number(statistics.viewCount),
+        const subscriberCount = Number(channelStatsData?.items?.[0]?.statistics?.subscriberCount || 0);
+        const videoCount = Number(channelStatsData?.items?.[0]?.statistics?.videoCount || 0);
+
+        // 2. Buscar todos os vídeos do canal e somar visualizações
+        let nextPageToken = '';
+        let allVideoIds = [];
+
+        do {
+          const searchRes = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=id&maxResults=50&pageToken=${nextPageToken}`);
+          const searchData = await searchRes.json();
+          const videoIds = searchData.items
+            .filter(item => item.id.kind === 'youtube#video')
+            .map(item => item.id.videoId);
+
+          allVideoIds.push(...videoIds);
+          nextPageToken = searchData.nextPageToken || '';
+        } while (nextPageToken);
+
+        let totalViews = 0;
+        for (let i = 0; i < allVideoIds.length; i += 50) {
+          const idsBatch = allVideoIds.slice(i, i + 50).join(',');
+          const videosRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${idsBatch}&key=${apiKey}`);
+          const videosData = await videosRes.json();
+
+          videosData.items.forEach(video => {
+            totalViews += Number(video.statistics.viewCount || 0);
           });
         }
+
+        setStats({
+          videoCount,
+          subscriberCount,
+          viewCount: totalViews
+        });
       } catch (error) {
         console.error("Erro ao buscar estatísticas do YouTube:", error);
       }
@@ -59,7 +81,6 @@ const About = () => {
     fetchYouTubeStats();
   }, []);
 
-  // busca links sociais do artista no Supabase
   useEffect(() => {
     const fetchSocialLinks = async () => {
       const { data, error } = await supabase
@@ -81,7 +102,6 @@ const About = () => {
     fetchSocialLinks();
   }, []);
 
-  // monta milestones dinamicamente
   const milestones = [
     {
       icon: Music2,
