@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Play, Eye } from 'lucide-react';
@@ -11,10 +10,11 @@ const GalleryCard = ({ item, index }) => {
 
   const handleViewVideo = () => {
     if (item.youtube_url) {
-      window.open(item.youtube_url, '_blank');
+      window.open(item.youtube_url, '_blank', 'noopener,noreferrer');
     } else {
       toast({
-        title: "🚧 Este recurso não está implementado ainda—mas não se preocupe! Você pode solicitá-lo no seu próximo prompt! 🚀",
+        title:
+          '🚧 Este recurso não está implementado ainda—mas não se preocupe! Você pode solicitá‑lo no seu próximo prompt! 🚀',
         duration: 3000,
       });
     }
@@ -31,8 +31,13 @@ const GalleryCard = ({ item, index }) => {
       <Card className="bg-black/40 border-red-900/30 hover-glow overflow-hidden">
         <div className="relative">
           <img
-            src={item.image_url || `https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop`}
+            src={
+              item.image_url && item.image_url.startsWith('http')
+                ? item.image_url
+                : 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop'
+            }
             alt={item.title}
+            loading="lazy"
             className="w-full h-48 object-cover transition-transform group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
@@ -47,16 +52,16 @@ const GalleryCard = ({ item, index }) => {
             </div>
           </div>
         </div>
-        
+
         <CardContent className="p-4">
-          <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-yellow-400 transition-colors">
+          <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-yellow-400 transition-colors line-clamp-1">
             {item.title}
           </h3>
           <p className="text-gray-400 text-sm mb-3 line-clamp-2">
             {item.description}
           </p>
-          
-          {item.tags && item.tags.length > 0 && (
+
+          {item.tags?.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {item.tags.map((tag, tagIndex) => (
                 <span
@@ -69,7 +74,7 @@ const GalleryCard = ({ item, index }) => {
             </div>
           )}
         </CardContent>
-        
+
         <CardFooter className="p-4 pt-0">
           <Button
             variant="outline"

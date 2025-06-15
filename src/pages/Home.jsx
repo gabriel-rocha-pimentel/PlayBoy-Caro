@@ -14,7 +14,6 @@ const Home = () => {
     banner_image_url: "https://images.unsplash.com/photo-1700940948230-465ebc062a06",
     youtube_channel_url: "https://www.youtube.com/@MurilloLimadossantos-b4h",
     instagram_url: "https://www.instagram.com/playboy_caro/",
-    twitter_url: "https://twitter.com/playboycaro", // Exemplo, pode remover se não tiver
   });
 
   useEffect(() => {
@@ -89,15 +88,12 @@ const Home = () => {
                   className="border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black px-8 py-3 text-lg shadow-lg hover-glow"
                 >
                   <Music className="mr-2 h-5 w-5" />
-                  Comprar Merch
+                  Crie Seu Drip
                 </Button>
               </Link>
             </div>
             <div className="flex space-x-4 mt-8">
                 <Button variant="ghost" size="icon" onClick={() => handleSocialClick(artistInfo.instagram_url)} className="text-gray-300 hover:text-yellow-400 transition-colors"><Instagram className="h-6 w-6" /></Button>
-                {artistInfo.twitter_url && 
-                  <Button variant="ghost" size="icon" onClick={() => handleSocialClick(artistInfo.twitter_url)} className="text-gray-300 hover:text-yellow-400 transition-colors"><Twitter className="h-6 w-6" /></Button>
-                }
                 <Button variant="ghost" size="icon" onClick={() => handleSocialClick(artistInfo.youtube_channel_url)} className="text-gray-300 hover:text-yellow-400 transition-colors"><Youtube className="h-6 w-6" /></Button>
             </div>
           </motion.div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, Film, ChevronDown, AlertTriangle } from 'lucide-react';
+import { Search, Filter, Film, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import GalleryCard from '@/components/GalleryCard';
@@ -14,43 +14,92 @@ const Gallery = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
   const [loading, setLoading] = useState(true);
-  const artistName = "PlayBoy Caro";
+  const artistName = 'PlayBoy Caro';
   const { toast } = useToast();
+
+  const fetchYouTubeVideos = async () => {
+    const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
+    const channelId = import.meta.env.VITE_YOUTUBE_CHANNEL_ID;
+    const maxResults = 20;
+
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&type=video&maxResults=${maxResults}`
+      );
+      const data = await response.json();
+
+      if (data.error) throw new Error(data.error.message);
+
+      return data.items.map((item) => ({
+        id: item.id.videoId,
+        title: item.snippet.title,
+        description: item.snippet.description,
+        image_url: item.snippet.thumbnails?.high?.url,
+        youtube_url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+        tags: ['youtube'],
+        created_at: item.snippet.publishedAt,
+      }));
+    } catch (error) {
+      throw error;
+    }
+  };
 
   useEffect(() => {
     const fetchGalleryItems = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('gallery')
-        .select('*')
-        .order('created_at', { ascending: false });
+      try {
+        const { data: dbData, error } = await supabase
+          .from('gallery')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-      if (error) {
-        toast({ title: 'Erro ao buscar vídeos da galeria', description: error.message, variant: 'destructive' });
-        setGalleryItems([]);
-      } else {
-        setGalleryItems(data || []);
+        if (error) {
+          toast({
+            title: 'Erro ao buscar dados do banco de dados',
+            description: error.message,
+            variant: 'destructive',
+          });
+        }
+
+        const ytData = await fetchYouTubeVideos();
+        const combined = [...(dbData || []), ...ytData].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+
+        setGalleryItems(combined);
+      } catch (err) {
+        toast({
+          title: 'Erro ao buscar vídeos do YouTube',
+          description: err.message,
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
+
     fetchGalleryItems();
   }, [toast]);
 
   useEffect(() => {
     let filtered = galleryItems;
     if (searchTerm) {
-      filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
+      filtered = filtered.filter(
+        (item) =>
+          item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (item.description &&
+            item.description.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
     if (selectedTag) {
-      filtered = filtered.filter(item => item.tags && item.tags.includes(selectedTag));
+      filtered = filtered.filter(
+        (item) => item.tags && item.tags.includes(selectedTag)
+      );
     }
     setFilteredItems(filtered);
   }, [searchTerm, selectedTag, galleryItems]);
 
-  const allTags = [...new Set(galleryItems.flatMap(item => item.tags || []))];
+  const allTags = [...new Set(galleryItems.flatMap((item) => item.tags || []))];
 
   return (
     <div className="min-h-screen py-20 px-4">
@@ -86,20 +135,20 @@ const Gallery = () => {
               />
             </div>
             <div className="relative w-full md:w-auto">
-               <Filter className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5 md:hidden" />
-                <select
-                  value={selectedTag}
-                  onChange={(e) => setSelectedTag(e.target.value)}
-                  className="w-full pl-10 md:pl-3 pr-8 py-3 bg-black/50 border-red-700/50 text-white rounded-md focus:border-yellow-500 focus:ring-yellow-500 appearance-none text-base"
-                >
-                  <option value="">Todas as Tags</option>
-                  {allTags.map(tag => (
-                    <option key={tag} value={tag} className="bg-black text-white">
-                      {tag.charAt(0).toUpperCase() + tag.slice(1)}
-                    </option>
-                  ))}
-                </select>
-                 <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5 pointer-events-none" />
+              <Filter className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5 md:hidden" />
+              <select
+                value={selectedTag}
+                onChange={(e) => setSelectedTag(e.target.value)}
+                className="w-full pl-10 md:pl-3 pr-8 py-3 bg-black/50 border-red-700/50 text-white rounded-md focus:border-yellow-500 focus:ring-yellow-500 appearance-none text-base"
+              >
+                <option value="">Todas as Tags</option>
+                {allTags.map((tag) => (
+                  <option key={tag} value={tag} className="bg-black text-white">
+                    {tag.charAt(0).toUpperCase() + tag.slice(1)}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5 pointer-events-none" />
             </div>
           </div>
         </motion.div>

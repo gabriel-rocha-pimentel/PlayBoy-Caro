@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Play, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 
-// Chave de API no .env (VITE_ para Vite)
+// Variáveis de ambiente (prefixo VITE_ obrigatório no Vite)
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
+const DEFAULT_CHANNEL_ID = import.meta.env.VITE_YOUTUBE_CHANNEL_ID;
 
 /**
- * Props:
- *  - channelId: ID do canal YouTube
- *  - artistName: nome para exibição
+ * YouTubePlayer
+ * Exibe o vídeo mais recente do canal.
+ *
+ * Props opcionais:
+ *  - channelId: ID do canal do YouTube (cai no padrão do .env se omitido).
+ *  - artistName: nome visível no título.
  */
 const YouTubePlayer = ({
-  channelId = 'UCT8wRZnCyqJ9y6-7IlYsWdg',
+  channelId = DEFAULT_CHANNEL_ID,
   artistName = 'Artista',
 }) => {
   const { toast } = useToast();
@@ -21,50 +25,62 @@ const YouTubePlayer = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchLatest() {
+    const fetchLatestVideo = async () => {
       if (!API_KEY) {
-        toast({ title: '⚠️ Chave de API não configurada.', description: 'Defina VITE_YOUTUBE_API_KEY em .env.', duration: 5000 });
+        toast({
+          title: '⚠️ Chave de API ausente',
+          description: 'Defina VITE_YOUTUBE_API_KEY em seu .env',
+          duration: 5000,
+          variant: 'destructive',
+        });
         setLoading(false);
         return;
       }
+
+      if (!channelId) {
+        toast({
+          title: '⚠️ channelId não informado',
+          description: 'Passe a prop ou defina VITE_YOUTUBE_CHANNEL_ID',
+          duration: 5000,
+          variant: 'destructive',
+        });
+        setLoading(false);
+        return;
+      }
+
       try {
-        // 1) Obter playlist de uploads do canal
+        // 1) Descobre a playlist de uploads do canal
         const channelRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}` +
-          `&id=${channelId}` +
-          `&part=contentDetails`
+          `https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelId}&part=contentDetails`
         );
         const channelData = await channelRes.json();
-        const uploadsId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+        const uploadsId =
+          channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+        if (!uploadsId) throw new Error('Uploads playlist não localizada');
 
-        if (!uploadsId) {
-          throw new Error('Uploads playlist não encontrada');
-        }
-
-        // 2) Buscar último vídeo dessa playlist
+        // 2) Recupera o último vídeo
         const playlistRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}` +
-          `&playlistId=${uploadsId}` +
-          `&part=snippet` +
-          `&maxResults=1`
+          `https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${uploadsId}&part=snippet&maxResults=1`
         );
         const playlistData = await playlistRes.json();
-        const item = playlistData.items?.[0];
+        const latest = playlistData.items?.[0]?.snippet?.resourceId?.videoId;
 
-        if (item) {
-          setVideoId(item.snippet.resourceId.videoId);
-        } else {
-          toast({ title: 'ℹ️ Nenhum vídeo encontrado.', duration: 3000 });
-        }
-      } catch (error) {
-        console.error(error);
-        toast({ title: '❌ Erro ao buscar vídeo.', description: error.message, duration: 5000 });
+        if (latest) setVideoId(latest);
+        else toast({ title: 'ℹ️ Nenhum vídeo encontrado', duration: 3000 });
+      } catch (err) {
+        console.error(err);
+        toast({
+          title: '❌ Erro ao buscar vídeo',
+          description: err.message,
+          duration: 5000,
+          variant: 'destructive',
+        });
       } finally {
         setLoading(false);
       }
-    }
+    };
 
-    fetchLatest();
+    fetchLatestVideo();
   }, [channelId, toast]);
 
   if (loading) return <p className="text-center text-white">Carregando vídeo...</p>;
