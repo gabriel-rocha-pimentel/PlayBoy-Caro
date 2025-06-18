@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /login/
+Disallow: /api/
+Allow: /
+
+Sitemap: https://play-boy-caro.vercel.app/sitemap.xml
+Host: https://play-boy-caro.vercel.app

@@ -1,4 +1,3 @@
-// components/AdminForm.jsx
 import ProductForm from '@/components/forms/ProductForm';
 import ArtistForm from '@/components/forms/ArtistForm';
 
@@ -13,15 +12,10 @@ const AdminForm = ({ item, onSave, onCancel }) => {
           {formType === 'products' ? 'Produto' : 'Artista'}
         </h2>
         {formType === 'products' ? (
-          <ProductForm data={item.data} onSave={onSave} />
+          <ProductForm data={item.data} onSave={onSave} onCancel={onCancel} />
         ) : (
-          <ArtistForm data={item.data} onSave={onSave} />
+          <ArtistForm data={item.data} onSave={onSave} onCancel={onCancel} />
         )}
-        <div className="pt-4">
-          <button onClick={onCancel} className="w-full py-2 mt-2 text-red-400 border border-red-600 rounded hover:bg-red-600 hover:text-white transition-all">
-            Cancelar
-          </button>
-        </div>
       </div>
     </div>
   );
