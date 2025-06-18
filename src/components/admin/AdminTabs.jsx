@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Home as HomeIcon, Film, ShoppingBag } from 'lucide-react';
+import { Home as HomeIcon, ShoppingBag } from 'lucide-react';
 
 const TabButton = ({ tabName, currentTab, label, icon: Icon, onClick }) => (
   <Button
@@ -27,7 +27,6 @@ const AdminTabs = ({ activeTab, setActiveTab }) => {
     >
       <div className="flex flex-col md:flex-row justify-center space-y-2 md:space-y-0 md:space-x-3">
         <TabButton tabName="home_info" currentTab={activeTab} label="Home" icon={HomeIcon} onClick={setActiveTab} />
-        <TabButton tabName="gallery" currentTab={activeTab} label="Galeria" icon={Film} onClick={setActiveTab} />
         <TabButton tabName="products" currentTab={activeTab} label="Loja" icon={ShoppingBag} onClick={setActiveTab} />
       </div>
     </motion.div>

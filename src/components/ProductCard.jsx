@@ -1,13 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Eye } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 
 const ProductCard = ({ product, index }) => {
-  const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleBuyClick = () => {
@@ -20,10 +18,6 @@ const ProductCard = ({ product, index }) => {
         duration: 3000,
       });
     }
-  };
-
-  const handleViewProduct = () => {
-    navigate(`/produto/${product.id}`);
   };
 
   const formatPrice = (price) => {
@@ -47,29 +41,12 @@ const ProductCard = ({ product, index }) => {
           <img 
             className="w-full h-60 object-cover transition-transform group-hover:scale-105"
             alt={product.name || "Produto Oficial PlayBoy Caro"}
-           src="https://images.unsplash.com/photo-1697862040431-f149c8e1ac9d" />
+           src={product.image_url || "https://images.unsplash.com/photo-1697862040431-f149c8e1ac9d"} />
           
           <div className="absolute top-2 right-2">
             <span className="bg-yellow-500 text-black px-3 py-1.5 rounded-full text-sm font-bold shadow-md">
               {formatPrice(product.price)}
             </span>
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-            <Button
-              onClick={handleBuyClick}
-              className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold mb-2"
-            >
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Comprar Merch Oficial
-            </Button>
-            <Button
-              onClick={handleViewProduct}
-              variant="outline"
-              className="w-full border-white text-white hover:bg-white hover:text-black"
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              Ver Detalhes
-            </Button>
           </div>
         </div>
         

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { LogOut, CheckCircle, Trash2 } from 'lucide-react';
@@ -35,7 +34,6 @@ const Admin = () => {
     instagram_url: "https://www.instagram.com/@playboy__caro/",
   });
 
-  const [galleryItems, setGalleryItems] = useState([]);
   const [products, setProducts] = useState([]);
   const [itemToDelete, setItemToDelete] = useState(null);
 
@@ -60,7 +58,6 @@ const Admin = () => {
   useEffect(() => {
     if (user) {
       fetchHomeInfo();
-      fetchGalleryItems();
       fetchProducts();
     }
   }, [user, toast]);
@@ -72,12 +69,6 @@ const Admin = () => {
     } else if (data) {
       setHomeInfo(prev => ({...prev, ...data}));
     }
-  };
-
-  const fetchGalleryItems = async () => {
-    const { data, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
-    if (error) toast({ title: 'Erro ao buscar itens da Galeria', description: error.message, variant: 'destructive' });
-    else setGalleryItems(data || []);
   };
 
   const fetchProducts = async () => {
@@ -114,7 +105,7 @@ const Admin = () => {
     if (formData.image_file) {
       const file = formData.image_file;
       const fileName = `${Date.now()}_${file.name.replace(/\s/g, '_')}`;
-      const filePath = `${type === 'products' ? 'products' : (type === 'gallery' ? 'music_banner' : 'banners')}/${fileName}`;
+      const filePath = `${type === 'products' ? 'products' : 'banners'}/${fileName}`;
       
       const { error: uploadError } = await supabase.storage
         .from('images')
@@ -130,7 +121,6 @@ const Admin = () => {
       delete updatedData.image_file; 
     }
 
-
     if (type === 'home_info') {
       const { id, ...dataToSave } = updatedData;
       if (id) {
@@ -139,14 +129,6 @@ const Admin = () => {
         ({ error } = await supabase.from('artist_info').insert(dataToSave).select().single());
       }
       if (!error) fetchHomeInfo();
-    } else if (type === 'gallery') {
-      const { id, ...dataToSave } = updatedData;
-      if (id) {
-        ({ error } = await supabase.from('gallery').update(dataToSave).eq('id', id));
-      } else {
-        ({ error } = await supabase.from('gallery').insert(dataToSave));
-      }
-      if (!error) fetchGalleryItems();
     } else if (type === 'products') {
       const { id, ...dataToSave } = updatedData;
       if (id) {
@@ -170,10 +152,7 @@ const Admin = () => {
     const { type, id } = itemToDelete;
     let error;
 
-    if (type === 'gallery') {
-      ({ error } = await supabase.from('gallery').delete().eq('id', id));
-      if (!error) fetchGalleryItems();
-    } else if (type === 'products') {
+    if (type === 'products') {
       ({ error } = await supabase.from('products').delete().eq('id', id));
       if (!error) fetchProducts();
     }
@@ -217,11 +196,10 @@ const Admin = () => {
             <AdminContentList
               activeTab={activeTab}
               homeInfo={homeInfo}
-              galleryItems={galleryItems}
               products={products}
               onEdit={(type, data) => setEditingItem({ type, data })}
               onDeleteInitiate={(type, id) => setItemToDelete({ type, id })}
-              onAddNew={(type) => setEditingItem({ type, data: type === 'home_info' ? { ...homeInfo } : (type === 'gallery' ? { title: '', description: '', image_url: '', youtube_url:'', tags: [] } : { name: '', description: '', image_url: '', price: 0, tags: [], product_url: '' })})}
+              onAddNew={(type) => setEditingItem({ type, data: type === 'home_info' ? { ...homeInfo } : { name: '', description: '', image_url: '', price: 0, tags: [], product_url: '' } })}
             />
           </motion.div>
 
