@@ -148,7 +148,7 @@ const Store = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               { title: "Envio Nacional", desc: "Receba seu merch em todo o Brasil.", icon: "🚚" },
-              { title: "Produtos 100% Oficiais", desc: "Garanta a autenticidade e qualidade PlayBoy Caro.", icon: "⭐" },
+              { title: "Produtos de Qualidade", desc: "Garanta a autenticidade e qualidade do seu estilo.", icon: "⭐" },
               { title: "Pagamento Seguro", desc: "Compra protegida com as melhores plataformas.", icon: "🔒" }
             ].map(info => (
               <div key={info.title} className="glass-effect rounded-xl p-8 text-center hover-glow">
